@@ -17,7 +17,7 @@ AWACS_PATROL_PARAMS = [270, 20000, 20000, 160, 7200, 2]
 AREA_PATROL_HEIGHT = 7000
 
 # PATROL_POINT1 = [-5000, 65000, AREA_PATROL_HEIGHT]
-PATROL_POINT1 = [0, 0, AREA_PATROL_HEIGHT]
+PATROL_POINT1 = [0, 0, 7000]
 PATROL_POINT2 = [-5000, -65000, AREA_PATROL_HEIGHT]
 PATROL_POINT3 = [-55000, 35000, AREA_PATROL_HEIGHT]
 PATROL_POINT4 = [-55000, -35000, AREA_PATROL_HEIGHT]
@@ -38,7 +38,7 @@ PATROL_SPEED = 250
 PATROL_TIME = 7200
 PATROL_MODE_0 = 0
 PATROL_MODE_1 = 1
-PATROL_PARAMS = [PATROL_DIRECTION, PATROL_AREA_LEN, PATROL_AREA_WID, PATROL_SPEED, PATROL_TIME, PATROL_MODE_0]
+PATROL_PARAMS = [PATROL_DIRECTION, PATROL_AREA_LEN, PATROL_AREA_WID, PATROL_SPEED, PATROL_TIME]
 PATROL_PARAMS_0 = [PATROL_DIRECTION, PATROL_AREA_LEN, PATROL_AREA_WID, PATROL_SPEED, PATROL_TIME, PATROL_MODE_0]
 PATROL_PARAMS_1 = [PATROL_DIRECTION, PATROL_AREA_LEN, PATROL_AREA_WID, PATROL_SPEED, PATROL_TIME, PATROL_MODE_1]
 
@@ -137,7 +137,7 @@ class BlueRuleAgent(Agent):
                         # print("导弹发射位置X:{:6.0f},Y:{:6.0f},Z:{:6.0f}".format(dic_distance[dis]['X'], dic_distance[dis]['Y'], dic_distance[dis]['Z']))
                         self.target_list.append(red_unit['ID'])
                         self.red_dic[dic_distance[dis]['ID']] = red_unit['ID']
-                        print("蓝方{dic_distance[dis]['ID']}打击红方{red_unit['ID']}")
+                        print(f"蓝方{dic_distance[dis]['ID']}打击红方{red_unit['ID']}")
         # 如果没有情报就按计划区域巡逻
         else:
             self.target_list = []
@@ -179,8 +179,6 @@ class BlueRuleAgent(Agent):
                             cmd_list.extend(self._returntobase(a2a['ID']))
                         else:
                             cmd_list.extend(self._areapatrol(a2a['ID'], PATROL_POINT1, PATROL_PARAMS))
-
-
         return cmd_list
 
     @staticmethod

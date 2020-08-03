@@ -96,7 +96,7 @@ AIR_PATROL_POINT6 = [-105000, -65000, AIR_PATROL_HEIGHT]
 # 南部警戒阵位3(-95000, -85000)--南岛东侧约37km, 距离己南部干扰阵位60km
 AIR_PATROL_POINT7 = [-95000, -85000, AIR_PATROL_HEIGHT]
 
-AIR_PATROL_PARAMS = [270, 10000, 10000, 250, 7200, 0]
+AIR_PATROL_PARAMS = [270, 10000, 10000, 250, 7200]
 AIR_PATROL_PARAMS_0 = [270, 10000, 10000, 160, 7200, 0]
 AIR_PATROL_PARAMS_1 = [270, 10000, 10000, 160, 7200, 1]
 
@@ -281,7 +281,7 @@ class RedRuleAgent(Agent):
                             if a2a['Fuel'] < 4000 or int(a2a['WP']['170']) == 0:
                                 cmd_list.extend(self._returntobase(a2a['ID']))
                             else:
-                                self._areapatrol(a2a['ID'], AIR_PATROL_POINT1, AIR_PATROL_PARAMS_0)
+                                self._areapatrol(a2a['ID'], AIR_PATROL_POINT1, AIR_PATROL_PARAMS)
         return cmd_list
 
     def _parse_observation(self, obs_red):

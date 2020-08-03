@@ -55,8 +55,7 @@ class WarRunner(EnvRunner):
 
         self.env_client.take_action([EnvCmd.make_simulation("SPEED", "", speed)])
 
-        f = open("state.json", "w")
-        f2 = open("hit_rate_test", "w")
+        f = open("run.log", "w")
         battle_results = [0, 0, 0]  # [红方获胜局数, 平局数量, 蓝方获胜局数]
         total_units_num = 0
         init_flag = 0
@@ -87,7 +86,6 @@ class WarRunner(EnvRunner):
                     try:
                         for unit in observation['red']['units'] :
                             red_units_dic[unit['ID']] = [unit['X'], unit['Y'], unit['Z']]
-                    #         print('ID:{:3d},X:{:3d:6.0f},Y:{:6.0f},Z:{:6.0f}'.format(unit['ID'],red_units_dic[unit['ID']][0], red_units_dic[unit['ID']][1], red_units_dic[unit['ID']][2]))
                     except Exception as e:
                         print(e)
 
@@ -97,7 +95,6 @@ class WarRunner(EnvRunner):
                     try:
                         for unit in observation['blue']['units'] :
                             blue_units_dic[unit['ID']] = [unit['X'], unit['Y'], unit['Z']]
-                    #         print(blue_units_dic)
                     except Exception as e:
                         print(e)
 
