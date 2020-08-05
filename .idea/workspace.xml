@@ -20,8 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f32a4873-0b25-4779-b6a2-899670b71ffc" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/agent/zhanlu_red.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agent/blue_rule_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent/blue_rule_agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_bak.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_bak.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

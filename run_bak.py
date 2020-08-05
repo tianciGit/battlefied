@@ -7,7 +7,7 @@ from env.env_client import EnvClient
 from env.env_cmd import EnvCmd
 from env.env_runner import EnvRunner
 
-from agent.red_rule_agent import RedRuleAgent
+from agent.zhanlu_red import RedZhanluAgent
 from agent.blue_rule_agent import BlueRuleAgent
 
 
@@ -110,7 +110,7 @@ config = {
     },
     'agents': {
         'red_name': {                   # 战队名
-            'class': RedRuleAgent,      # 智能体类名
+            'class': RedZhanluAgent,      # 智能体类名
             'side': 'red'               # 智能体所属军别(不可更改!)
         },
         'blue_name': {                  # 战队名
