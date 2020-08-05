@@ -296,3 +296,7 @@ class BlueRuleAgent(Agent):
     @staticmethod
     def _takeoff_areahunt(num, area_hunt_point, area_hunt_area):
         return [EnvCmd.make_takeoff_areahunt(20001, num, 90, 100, *area_hunt_point, *area_hunt_area)]
+
+    # 护卫舰初始化部署
+    def _ship_movedeploy(self, self_id, point):
+        return [EnvCmd.make_ship_movedeploy(self_id, *point, 90, 1)]
