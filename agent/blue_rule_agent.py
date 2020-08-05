@@ -14,7 +14,7 @@ RED_HOME_POINT = [146700, -3000, 0]
 
 # 护卫舰
 # 北部巡逻阵位
-SHIP_POINT1 = [-100000, 65000, 0]
+SHIP_POINT1 = [-80000, 65000, 0]
 SHIP_PATROL_PARAMS_0 = [90, 20000, 20000, 190, 7200, 0]
 
 # 预警机
@@ -124,6 +124,10 @@ class BlueRuleAgent(Agent):
         # 第一轮起飞巡逻
         if self.agent_state == BlueAgentState.PATROL0 and curr_time >= PATROL_TIME1:
             cmd_list.extend(self._takeoff_areapatrol(1, 11, PATROL_POINT1, PATROL_PARAMS))
+
+            for ship in obs_blue['units']:
+                if ship['LX'] == 21:
+                    cmd_list.extend(self._ship_movedeploy(ship['ID'], SHIP_POINT1))
             self.agent_state = BlueAgentState.PATROL1
 
         elif self.agent_state == BlueAgentState.PATROL1 and curr_time >= PATROL_TIME2:
