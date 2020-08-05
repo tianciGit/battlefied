@@ -181,6 +181,7 @@ class BlueRuleAgent(Agent):
                             cmd_list.extend(self._areapatrol(a2a['ID'], PATROL_POINT1, PATROL_PARAMS))
         return cmd_list
 
+    # 起飞区域巡逻
     @staticmethod
     def _takeoff_areapatrol(num, lx, patrol_point, patrol_params):
         return [EnvCmd.make_takeoff_areapatrol(BLUE_AIRPORT_ID, num, lx, *patrol_point, *patrol_params)]
@@ -190,6 +191,7 @@ class BlueRuleAgent(Agent):
     def _areapatrol(unit_id, patrol_point, patrol_params):
         return [EnvCmd.make_areapatrol(unit_id, *patrol_point, *patrol_params)]
 
+    # 歼击机空战
     @staticmethod
     def _airattack(unit_id, target_id):
         return [EnvCmd.make_airattack(unit_id, target_id, 1)]
@@ -208,3 +210,24 @@ class BlueRuleAgent(Agent):
     @staticmethod
     def _takeoff_areahunt(num, area_hunt_point, area_hunt_area):
         return [EnvCmd.make_takeoff_areahunt(20001, num, 90, 100, *area_hunt_point, *area_hunt_area)]
+
+    # 地防添加目标
+    @staticmethod
+    def _ground_addtarget(self_id, target_id):
+        return [EnvCmd.make_ground_addtarget(self_id, target_id)]
+
+    # 地防移除目标
+    def _ground_removetarget(self_id, target_id):
+        return [EnvCmd.make_ground_removetarget(self_id, target_id)]
+
+    # 地防雷达开关机(适用于地面防空编队)
+    def _ground_radarcontrol(self_id, on_off):
+        return [EnvCmd.make_ground_radarcontrol(self_id, on_off)]
+
+    # 地防设置防御方向(适用于己方地面防空编队)
+    def _ground_setdirection(self_id, direction):
+        return [EnvCmd.make_ground_setdirection(self_id, direction)]
+
+    # 地防机动至指定位置重新部署(适用于己方地面防空编队)
+    def _ground_movedeploy(self_id, px, py, pz, direction, radar_state):
+        return [EnvCmd.make_ground_movedeploy(self_id, px, py, pz, direction, radar_state)]

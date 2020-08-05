@@ -249,6 +249,8 @@ class RedRuleAgent(Agent):
                         print("红方向蓝方发射1枚导弹，目标距离:{:6.0f}".format(dis))
                         self.blue_list.append(blue_unit['ID'])
                         self.blue_dic[dic_distance[dis]['ID']] = blue_unit['ID']
+                        print(f"红方{dic_distance[dis]['ID']}打击蓝方{blue_unit['ID']}")
+
                         break
         # 红方将蓝方单位击落或者红方拦截飞机被蓝方击落
         blue = 0
