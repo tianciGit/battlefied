@@ -665,7 +665,7 @@ class RedZhanluAgent(Agent):
 
     # 轰炸机护航
     @staticmethod
-    def _A2G_escort(self, a2g_team_id):
+    def _A2G_escort(a2g_team_id):
         print("红方-起飞护航指令-护航轰炸机! 起飞数量: 2")
         return [EnvCmd.make_takeoff_protect(RED_AIRPORT_ID, 2, a2g_team_id, 1, 20, 170)]
 
