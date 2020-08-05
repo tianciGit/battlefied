@@ -127,7 +127,7 @@ class BlueRuleAgent(Agent):
 
             for ship in obs_blue['units']:
                 if ship['LX'] == 21:
-                    cmd_list.extend(self._ship_movedeploy(self, ship['ID'], SHIP_POINT1))
+                    cmd_list.extend(self._ship_movedeploy(ship['ID'], SHIP_POINT1))
             self.agent_state = BlueAgentState.PATROL1
 
         elif self.agent_state == BlueAgentState.PATROL1 and curr_time >= PATROL_TIME2:
@@ -298,7 +298,8 @@ class BlueRuleAgent(Agent):
         return [EnvCmd.make_takeoff_areahunt(20001, num, 90, 100, *area_hunt_point, *area_hunt_area)]
 
     # 护卫舰初始化部署
-    def _ship_movedeploy(self, self_id, point):
+    @staticmethod
+    def _ship_movedeploy(self_id, point):
         return [EnvCmd.make_ship_movedeploy(self_id, *point, 90, 1)]
 
 
