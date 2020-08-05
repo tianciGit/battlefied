@@ -652,16 +652,19 @@ class RedZhanluAgent(Agent):
         return [EnvCmd.make_takeoff_targethunt(RED_AIRPORT_ID, num, target_id, direction, 55, 175)]
 
     # 预警机护航
-    def _awacs_escort(self, awacs_team_id):
+    @staticmethod
+    def _awacs_escort(awacs_team_id):
         print("红方-歼击机-起飞护航指令-护航-预警机! 起飞数量: 2")
         return [EnvCmd.make_takeoff_protect(RED_AIRPORT_ID, 2, awacs_team_id, 0, 10, 180)]
 
     # 干扰机护航
+    @staticmethod
     def _disturb_escort(self, disturb_team_id):
         print("红方-起飞护航指令-护航干扰机! 起飞数量: 2")
         return [EnvCmd.make_takeoff_protect(RED_AIRPORT_ID, 2, disturb_team_id, 1, 20, 170)]
 
     # 轰炸机护航
+    @staticmethod
     def _A2G_escort(self, a2g_team_id):
         print("红方-起飞护航指令-护航轰炸机! 起飞数量: 2")
         return [EnvCmd.make_takeoff_protect(RED_AIRPORT_ID, 2, a2g_team_id, 1, 20, 170)]
@@ -679,7 +682,8 @@ class RedZhanluAgent(Agent):
         return [EnvCmd.make_returntobase(unit_id, 30001)]
 
     # 护卫舰初始化部署
-    def _ship_movedeploy(self, self_id, point):
+    @staticmethod
+    def _ship_movedeploy(self_id, point):
         print("红方-护卫舰初始部署!")
         return [EnvCmd.make_ship_movedeploy(self_id, *point, 90, 1)]
 
@@ -767,7 +771,8 @@ class RedZhanluAgent(Agent):
 
 
     # 护卫舰区域巡逻
-    def _ship_areapatrol(self, self_id, point):
+    @staticmethod
+    def _ship_areapatrol( self_id, point):
         print("红方-护卫舰-区域巡逻防空!")
         return [EnvCmd.make_ship_areapatrol(self_id, *point, *SHIP_PATROL_PARAMS_0)]
 
