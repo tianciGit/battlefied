@@ -659,7 +659,7 @@ class RedZhanluAgent(Agent):
 
     # 干扰机护航
     @staticmethod
-    def _disturb_escort(self, disturb_team_id):
+    def _disturb_escort(disturb_team_id):
         print("红方-起飞护航指令-护航干扰机! 起飞数量: 2")
         return [EnvCmd.make_takeoff_protect(RED_AIRPORT_ID, 2, disturb_team_id, 1, 20, 170)]
 
