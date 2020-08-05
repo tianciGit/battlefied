@@ -5,7 +5,17 @@ from agent.agent import Agent
 from env.env_cmd import EnvCmd
 from env.env_def import UnitType, UnitStatus, BLUE_AIRPORT_ID
 
+# 蓝方北部指挥所
+BLUE_HOME_POINT_1 = [-129532, 87667, 0]
+# 蓝方南部指挥所
+BLUE_HOME_POINT_2 = [-131154, -87888, 0]
+# 红方指挥所
+RED_HOME_POINT = [146700, -3000, 0]
 
+# 护卫舰
+# 北部巡逻阵位
+SHIP_POINT1 = [-100000, 65000, 0]
+SHIP_PATROL_PARAMS_0 = [90, 20000, 20000, 190, 7200, 0]
 
 # 预警机
 # 预警机待命阵位
@@ -16,8 +26,7 @@ AWACS_PATROL_PARAMS = [270, 20000, 20000, 160, 7200, 2]
 
 AREA_PATROL_HEIGHT = 7000
 
-# PATROL_POINT1 = [-5000, 65000, AREA_PATROL_HEIGHT]
-PATROL_POINT1 = [0, 0, 7000]
+PATROL_POINT1 = [-5000, 65000, AREA_PATROL_HEIGHT]
 PATROL_POINT2 = [-5000, -65000, AREA_PATROL_HEIGHT]
 PATROL_POINT3 = [-55000, 35000, AREA_PATROL_HEIGHT]
 PATROL_POINT4 = [-55000, -35000, AREA_PATROL_HEIGHT]
@@ -31,8 +40,8 @@ PATROL_POINT14 = [-80000, -15000, AREA_PATROL_HEIGHT]
 PATROL_POINT15 = [-80000, -45000, AREA_PATROL_HEIGHT]
 PATROL_POINT16 = [-80000, -75000, AREA_PATROL_HEIGHT]
 
-PATROL_AREA_LEN = 10000
-PATROL_AREA_WID = 10000
+PATROL_AREA_LEN = 30000
+PATROL_AREA_WID = 30000
 PATROL_DIRECTION = 90
 PATROL_SPEED = 250
 PATROL_TIME = 7200
@@ -112,32 +121,99 @@ class BlueRuleAgent(Agent):
         curr_time = sim_time
         cmd_list = []
 
-        if self.agent_state == BlueAgentState.PATROL0:
+        # 第一轮起飞巡逻
+        if self.agent_state == BlueAgentState.PATROL0 and curr_time >= PATROL_TIME1:
             cmd_list.extend(self._takeoff_areapatrol(1, 11, PATROL_POINT1, PATROL_PARAMS))
-            print('蓝方派出一架歼击机到地图中心进行区域巡逻')
+            for df in obs_blue['units']:
+                if df['LX'] == 31:
+                    cmd_list.extend(self._ground_setdirection(df['ID'], 90))
+                if df['LX'] == 32:
+                    cmd_list.extend(self._ground_radarcontrol(df['ID'], 1))
+                if df['LX'] == 21:
+                    cmd_list.extend(self._ship_areapatrol(df['ID'], SHIP_POINT1))
             self.agent_state = BlueAgentState.PATROL1
 
+        elif self.agent_state == BlueAgentState.PATROL1 and curr_time >= PATROL_TIME2:
+            for awas in obs_blue['units']:
+                if awas['LX'] == 12:
+                    cmd_list.extend(self._awacs_patrol(awas['ID'], [-100000, 0, 7500], AWACS_PATROL_PARAMS))
+                    self.agent_state = BlueAgentState.PATROL2
+
+        elif self.agent_state == BlueAgentState.PATROL2 and curr_time >= PATROL_TIME2:
+            cmd_list.extend(self._takeoff_areapatrol(1, 11, PATROL_POINT1, PATROL_PARAMS))
+            self.agent_state = BlueAgentState.PATROL3
+        elif self.agent_state == BlueAgentState.PATROL3 and curr_time >= PATROL_TIME3:
+            cmd_list.extend(self._takeoff_areapatrol(1, 11, PATROL_POINT2, PATROL_PARAMS))
+            self.agent_state = BlueAgentState.PATROL4
+        elif self.agent_state == BlueAgentState.PATROL4 and curr_time >= PATROL_TIME4:
+            cmd_list.extend(self._takeoff_areapatrol(1, 11, PATROL_POINT3, PATROL_PARAMS))
+            self.agent_state = BlueAgentState.PATROL5
+        elif self.agent_state == BlueAgentState.PATROL5 and curr_time >= PATROL_TIME5:
+            cmd_list.extend(self._takeoff_areapatrol(1, 11, PATROL_POINT4, PATROL_PARAMS))
+            self.agent_state = BlueAgentState.PATROL6
+        elif self.agent_state == BlueAgentState.PATROL6 and curr_time >= PATROL_TIME6:
+            cmd_list.extend(self._takeoff_areapatrol(1, 11, PATROL_POINT5, PATROL_PARAMS))
+            self.agent_state = BlueAgentState.PATROL11
+
+        # print('蓝方：', self.red_dic)
+        # print('蓝方：', self.target_list)
         # 发现红方，立马攻击，并且派最近的编队去支援，同时机场再派出替补编队去替补支援编队空出的位置
         if obs_blue['qb']:
             for red_unit in obs_blue['qb']:
 
                 # 获取红方单位并且是存活状态
-                if red_unit['LX'] == 11 and red_unit['WH'] == 1 and red_unit['ID'] not in self.target_list:
-                    dic_distance = {}
-                    for a2a in obs_blue['units']:
-                        distance = math.sqrt(math.pow(a2a['X']-red_unit['X'],2)+math.pow(a2a['Y']-red_unit['Y'],2))
-                        dic_distance[distance] = a2a
+                if red_unit['LX'] == 13 or red_unit['LX'] == 11 or red_unit['LX'] == 12 or \
+                        red_unit['LX'] == 15:
+                    if red_unit['WH'] == 1 and red_unit['ID'] not in self.target_list:
+                        # print(self.target_list)
+                        dic_distance = {}
+                        for a2a in obs_blue['units']:
+                            # 根据飞机当前的状态，如果油量大于3000并且弹药大于0，则执行以下逻辑
+                            if a2a['LX'] == 11 and a2a['Fuel'] > 3000 and '170' in list(a2a['WP'].keys()) and int(a2a['WP']['170']) > 0:
+                                # 计算蓝方飞机与情报中红方飞机的距离，取最近的1个过去拦截
+                                distance = math.sqrt(
+                                    math.pow(a2a['X'] - red_unit['X'], 2) + math.pow(a2a['Y'] - red_unit['Y'], 2))
+                                dic_distance[distance] = a2a
                         list_distance = list(dic_distance.keys())
                         list_distance.sort()
                         # 派一架飞机去拦截
-                    for dis in list_distance[:1]:
-                        # 拦截
-                        cmd_list.extend(self._airattack(dic_distance[dis]['ID'], red_unit['ID']))
-                        print("蓝方向红方发射1枚导弹，目标距离:{:6.0f}".format(dis))
-                        # print("导弹发射位置X:{:6.0f},Y:{:6.0f},Z:{:6.0f}".format(dic_distance[dis]['X'], dic_distance[dis]['Y'], dic_distance[dis]['Z']))
-                        self.target_list.append(red_unit['ID'])
-                        self.red_dic[dic_distance[dis]['ID']] = red_unit['ID']
-                        print(f"蓝方{dic_distance[dis]['ID']}打击红方{red_unit['ID']}")
+                        for dis in list_distance[:1]:
+                            # 如果油量小于3000或者子弹数量为0则返航，否者原地进行区域巡逻
+                            # if dic_distance[dis]['Fuel'] < 3000 or int(dic_distance[dis]['WP']['170']) == 0:
+                            #     cmd_list.extend(self._returntobase(dic_distance[dis]['ID']))
+                            # else:
+                            # 拦截
+                            cmd_list.extend(self._airattack(dic_distance[dis]['ID'], red_unit['ID']))
+                            self.target_list.append(red_unit['ID'])
+                            # print('添加打击目标id：', red_unit['ID'])
+                            self.red_dic[dic_distance[dis]['ID']] = red_unit['ID']
+                            # print(f"蓝方{dic_distance[dis]['ID']}打击红方{red_unit['ID']}")
+
+                        # 派出替补编队进行替补(需考虑二次起飞的弹药补给时间1200s)
+                        for dis in list_distance[:1]:
+                            point_T = [dic_distance[dis]['X'], dic_distance[dis]['Y'], 7000]
+                            for airports in obs_blue['airports']:
+                                if airports['AIR'] == 0:
+                                    self.airport_flag = True
+                                if self.airport_flag and airports['AIR'] >= 1:
+                                    self.airport_flag_time = sim_time
+                                    self.airport_flag = False
+                                # 补给时间过20min
+                                if (sim_time - self.airport_flag_time) > 1200 and airports['AIR'] > 0:
+                                    cmd_list.extend(self._takeoff_areapatrol(1, 11, point_T, PATROL_PARAMS))
+                                    print('蓝方派出补给完成的替补编队进行替补')
+                                # 初次起飞飞机
+                                if self.airport_flag is False and self.airport_flag_time == 9000 and self.tm_a2a < 6:
+                                    cmd_list.extend(self._takeoff_areapatrol(1, 11, PATROL_POINT1, PATROL_PARAMS))
+                                    print('蓝方派出初次替补编队进行替补')
+                                    self.tm_a2a += 1
+
+                # 获取红方舰船
+                if red_unit['LX'] == 21 and red_unit['ID'] not in self.target_ship_list:
+                    cmd_list.extend(
+                        self._takeoff_areahunt(2, [red_unit['X'], red_unit['Y'], 5000], [90, 1000, 1000, 160]))
+                    self.target_ship_list.append(red_unit['ID'])
+                    print('蓝方派出轰炸机攻击红方护卫舰')
         # 如果没有情报就按计划区域巡逻
         else:
             self.target_list = []
@@ -151,34 +227,49 @@ class BlueRuleAgent(Agent):
             # 判断是否在情报里，不在就从打击列表中删除
             for red_unit in obs_blue['qb']:
                 if red_target == red_unit['ID']:
-                    red = 1     # 敌方飞机在情报里，不需要删除目标，不需要重新指派；如果敌方飞机不在情报里，则删除目标，重新指派
+                    red = 1
                     break
             # 判断我方飞机是否存活，若死亡则把敌方从打击列表中删除
             for a2a_id in list(self.red_dic.keys()):
                 for a2a in obs_blue['units']:
                     if a2a['ID'] == a2a_id:
-                        del_red = True  # 执行任务的飞机活着，不需要删除目标，不需要重新指派；如果执行任务的飞机死了，则删除目标，重新指派
+                        del_red = True
                         break
                 if del_red is False:
-                    self.red_dic.pop(a2a_id)    # 执行任务的飞机id：a2a_id已死亡
+                    # print(f"蓝方{a2a_id}已死亡")
+                    self.red_dic.pop(a2a_id)
             # 判断此打击目标是否有我方飞机去打击（中途目标可能会改变）
             for a2a_id in list(self.red_dic.keys()):
                 if red_target == self.red_dic[a2a_id]:
-                    del_red2 = True     # 判断目标是否有我方飞机去打击，如果有则不需要删除目标；如果没有，则删除目标，重新指派
+                    del_red2 = True
                     break
             if red == 0 or del_red is False or del_red2 is False:
                 self.target_list.remove(red_target)
+                # print('删除目标id：', red_target)
                 # 如果红方单位已被歼灭，需根据蓝方飞机当前状态重新下指令
-            for a2a in obs_blue['units']:
-                # 此时对状态为15 或 13 的蓝方飞机进行判断
-                if a2a['LX'] == 11 and a2a['ID'] in list(self.red_dic.keys()) and self.red_dic[a2a['ID']] == red_target:
-                    # print('打击目标死亡后，对蓝方飞机重新下指令~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-                    if a2a['ST'] == 15 or a2a['ST'] == 13:
+                for a2a in obs_blue['units']:
+                    # 此时对状态为15 或 13 的蓝方飞机进行判断
+                    if a2a['LX'] == 11 and a2a['ID'] in list(self.red_dic.keys()) and self.red_dic[a2a['ID']] == red_target:
+                        # print('打击目标死亡后，对蓝方飞机重新下指令~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+                        if a2a['ST'] == 15 or a2a['ST'] == 13:
                             # 如果油量小于3000或者子弹数量为0则返航，否者原地进行区域巡逻
-                        if a2a['Fuel'] < 3000 or int(a2a['WP']['170']) == 0:
-                            cmd_list.extend(self._returntobase(a2a['ID']))
-                        else:
-                            cmd_list.extend(self._areapatrol(a2a['ID'], PATROL_POINT1, PATROL_PARAMS))
+                            if a2a['Fuel'] < 3000 or int(a2a['WP']['170']) == 0:
+                                cmd_list.extend(self._returntobase(a2a['ID']))
+                            else:
+                                print("A2A信息>>>", a2a['ID'], a2a['LX'], a2a['ST'], a2a['X'], a2a['Y'], a2a['Z'])
+                                if int(a2a['Y']) > 35000:
+                                    point_now = PATROL_POINT1
+                                    cmd_list.extend(self._areapatrol(a2a['ID'], point_now, PATROL_PARAMS_0))
+                                elif 0 < int(a2a['Y']) <= 35000:
+                                    point_now = PATROL_POINT3
+                                    cmd_list.extend(self._areapatrol(a2a['ID'], point_now, PATROL_PARAMS_0))
+                                elif -35000 <= int(a2a['Y']) <= 0:
+                                    point_now = PATROL_POINT4
+                                    cmd_list.extend(self._areapatrol(a2a['ID'], point_now, PATROL_PARAMS_0))
+                                elif int(a2a['Y']) < -35000:
+                                    point_now = PATROL_POINT2
+                                    cmd_list.extend(self._areapatrol(a2a['ID'], point_now, PATROL_PARAMS_0))
+
         return cmd_list
 
     # 起飞区域巡逻
@@ -191,7 +282,6 @@ class BlueRuleAgent(Agent):
     def _areapatrol(unit_id, patrol_point, patrol_params):
         return [EnvCmd.make_areapatrol(unit_id, *patrol_point, *patrol_params)]
 
-    # 歼击机空战
     @staticmethod
     def _airattack(unit_id, target_id):
         return [EnvCmd.make_airattack(unit_id, target_id, 1)]
@@ -217,17 +307,31 @@ class BlueRuleAgent(Agent):
         return [EnvCmd.make_ground_addtarget(self_id, target_id)]
 
     # 地防移除目标
+    @staticmethod
     def _ground_removetarget(self_id, target_id):
         return [EnvCmd.make_ground_removetarget(self_id, target_id)]
 
     # 地防雷达开关机(适用于地面防空编队)
+    @staticmethod
     def _ground_radarcontrol(self_id, on_off):
         return [EnvCmd.make_ground_radarcontrol(self_id, on_off)]
 
     # 地防设置防御方向(适用于己方地面防空编队)
+    @staticmethod
     def _ground_setdirection(self_id, direction):
         return [EnvCmd.make_ground_setdirection(self_id, direction)]
 
     # 地防机动至指定位置重新部署(适用于己方地面防空编队)
+    @staticmethod
     def _ground_movedeploy(self_id, px, py, pz, direction, radar_state):
         return [EnvCmd.make_ground_movedeploy(self_id, px, py, pz, direction, radar_state)]
+
+    # 护卫舰区域巡逻
+    @staticmethod
+    def _ship_areapatrol(self_id, point):
+        return [EnvCmd.make_ship_areapatrol(self_id, *point, *SHIP_PATROL_PARAMS_0)]
+
+    # 护卫舰初始化部署
+    @staticmethod
+    def _ship_movedeploy(self_id, point):
+        return [EnvCmd.make_ship_movedeploy(self_id, *point, 90, 1)]

@@ -124,13 +124,6 @@ class BlueRuleAgent(Agent):
         # 第一轮起飞巡逻
         if self.agent_state == BlueAgentState.PATROL0 and curr_time >= PATROL_TIME1:
             cmd_list.extend(self._takeoff_areapatrol(1, 11, PATROL_POINT1, PATROL_PARAMS))
-            for df in obs_blue['units']:
-                if df['LX'] == 31:
-                    cmd_list.extend(self._ground_setdirection(df['ID'], 90))
-                if df['LX'] == 32:
-                    cmd_list.extend(self._ground_radarcontrol(df['ID'], 1))
-                if df['LX'] == 21:
-                    cmd_list.extend(self._ship_areapatrol(df['ID'], SHIP_POINT1))
             self.agent_state = BlueAgentState.PATROL1
 
         elif self.agent_state == BlueAgentState.PATROL1 and curr_time >= PATROL_TIME2:
@@ -272,7 +265,6 @@ class BlueRuleAgent(Agent):
 
         return cmd_list
 
-    # 起飞区域巡逻
     @staticmethod
     def _takeoff_areapatrol(num, lx, patrol_point, patrol_params):
         return [EnvCmd.make_takeoff_areapatrol(BLUE_AIRPORT_ID, num, lx, *patrol_point, *patrol_params)]
@@ -300,38 +292,3 @@ class BlueRuleAgent(Agent):
     @staticmethod
     def _takeoff_areahunt(num, area_hunt_point, area_hunt_area):
         return [EnvCmd.make_takeoff_areahunt(20001, num, 90, 100, *area_hunt_point, *area_hunt_area)]
-
-    # 地防添加目标
-    @staticmethod
-    def _ground_addtarget(self_id, target_id):
-        return [EnvCmd.make_ground_addtarget(self_id, target_id)]
-
-    # 地防移除目标
-    @staticmethod
-    def _ground_removetarget(self_id, target_id):
-        return [EnvCmd.make_ground_removetarget(self_id, target_id)]
-
-    # 地防雷达开关机(适用于地面防空编队)
-    @staticmethod
-    def _ground_radarcontrol(self_id, on_off):
-        return [EnvCmd.make_ground_radarcontrol(self_id, on_off)]
-
-    # 地防设置防御方向(适用于己方地面防空编队)
-    @staticmethod
-    def _ground_setdirection(self_id, direction):
-        return [EnvCmd.make_ground_setdirection(self_id, direction)]
-
-    # 地防机动至指定位置重新部署(适用于己方地面防空编队)
-    @staticmethod
-    def _ground_movedeploy(self_id, px, py, pz, direction, radar_state):
-        return [EnvCmd.make_ground_movedeploy(self_id, px, py, pz, direction, radar_state)]
-
-    # 护卫舰区域巡逻
-    @staticmethod
-    def _ship_areapatrol(self_id, point):
-        return [EnvCmd.make_ship_areapatrol(self_id, *point, *SHIP_PATROL_PARAMS_0)]
-
-    # 护卫舰初始化部署
-    @staticmethod
-    def _ship_movedeploy(self_id, point):
-        return [EnvCmd.make_ship_movedeploy(self_id, *point, 90, 1)]
