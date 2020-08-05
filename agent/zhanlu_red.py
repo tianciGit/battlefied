@@ -744,12 +744,14 @@ class RedZhanluAgent(Agent):
         return [EnvCmd.make_awcs_canceldetect(self_id)]
 
     # 干扰机进行区域干扰
-    def _disturb_patrol(self, disturb_team_id, patrol_point, patrol_params):
+    @staticmethod
+    def _disturb_patrol(disturb_team_id, patrol_point, patrol_params):
         print("红方-干扰机 执行-区域干扰-指令!")
         return [EnvCmd.make_disturb_areapatrol(disturb_team_id, *patrol_point, *patrol_params)]
 
     # 干扰机进行航线干扰,
-    def _disturb_linepatrol(self, self_id, point_list):
+    @staticmethod
+    def _disturb_linepatrol(self_id, point_list):
         print("红方-干扰机 执行-航线干扰-指令! 完成后在终点附近盘旋!")
         return [EnvCmd.make_disturb_linepatrol(self_id, 160, 0, 'line', point_list)]
 
