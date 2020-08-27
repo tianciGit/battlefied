@@ -20,7 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f32a4873-0b25-4779-b6a2-899670b71ffc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/agent/zhanlu_red.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent/zhanlu_red.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/agent/xuanyuan_blue_agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Bot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Bot.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_bak.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_bak.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,9 +41,11 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -67,9 +73,21 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="395" y="91" key="#Inspections" timestamp="1598340709874">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="395" y="91" key="#Inspections/0.0.1536.824@0.0.1536.824" timestamp="1598340709874" />
     <state x="543" y="167" key="FileChooserDialogImpl" timestamp="1596014265985">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="543" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1596014265985" />
+    <state x="270" y="57" key="SettingsEditor" timestamp="1598340425718">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="270" y="57" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1598340425718" />
+    <state width="600" height="428" key="javadoc.popup" timestamp="1598337535892">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="600" height="428" key="javadoc.popup/0.0.1536.824@0.0.1536.824" timestamp="1598337535892" />
   </component>
 </project>

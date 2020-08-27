@@ -8,7 +8,7 @@ from env.env_cmd import EnvCmd
 from env.env_runner import EnvRunner
 
 from agent.zhanlu_red import RedZhanluAgent
-from agent.blue_rule_agent import BlueRuleAgent
+from agent.xuanyuan_blue_agent import BlueRuleAgent
 
 
 def connect_loop(rpyc_port):
